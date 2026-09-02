@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load flight_display %}
+{% load static %}
+
+{% block title %}Flight Results: {{ search.origin_city }} to {{ search.destination_city }} | Nandi Travel Trips{% endblock %}
+
+{% block content %}
+<div class="results-page-wrapper">
+    <!-- ==========================================================
+         Search Summary Header Bar
+    ========================================================== -->
+    <div class="search-summary-bar">
+        <div class="container summary-container">
+            <div class="summary-route">
+                <div class="route-airports">
+                    <span class="route-city">{{ search.origin_city }} ({{ search.origin_code }})</span>
+                    <i class="fas fa-arrow-right route-arrow"></i>
+                    <span class="route-city">{{ search.destination_city }} ({{ search.destination_code }})</span>
+                </div>
+                <div class="route-meta">
+                    <span><i class="far fa-calendar-alt"></i> {{ search.departure_date|flight_date }}</span>
+                    {% if search.return_date %}
+                        <span><i class="fas fa-undo"></i> Return: {{ search.return_date|flight_date }}</span>
+                    {% endif %}
+                    <span><i class="fas fa-users"></i> {{ search.total_passengers }} Traveller{% if search.total_passengers > 1 %}s{% endif %}</span>
+                    <span class="meta-badge">{{ search.travel_class|title }}</span>
+                    <span class="meta-badge">{{ search.fare_type }}</span>
+                    {% if search.data_source == 'travelport_live' %}
+                        <span class="meta-badge live-badge"><i class="fas fa-bolt"></i> Live Travelport TripServices</span>
+                    {% elif search.data_source == 'amadeus_live' %}
+                        <span class="meta-badge live-badge"><i class="fas fa-bolt"></i> Live Amadeus Data</span>
+                    {% else %}
+                        <span class="meta-badge"><i class="fas fa-check-circle"></i> Best Fares</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="summary-actions">
+                <a href="{% url 'home' %}" class="btn-modify-search">
+                    <i class="fas fa-sliders-h"></i> Modify Search
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================
+         Main Results Content
+    ========================================================== -->
+    <div class="container results-layout">
+        <!-- ==========================================
+             Left Filter Sidebar
+        =========================================== -->
+        <aside class="filters-sidebar">
+            <div class="filter-card">
+                <div class="filter-header">
+                    <h3><i class="fas fa-filter"></i> Filters</h3>
+                    <a href="{% url 'flight_results' %}?origin_code={{ search.origin_code }}&destination_code={{ search.destination_code }}&departure_date={{ search.departure_date|flight_date }}&adults={{ search.adults }}" class="reset-filters">Reset All</a>
+                </div>
+
+                <form id="filterForm" method="GET" action="{% url 'flight_results' %}">
+                    <input type="hidden" name="origin_code" value="{{ search.origin_code }}">
+                    <input type="hidden" name="destination_code" value="{{ search.destination_code }}">
+                    <input type="hidden" name="departure_date" value="{{ search.departure_date|flight_date }}">
+                    <input type="hidden" name="return_date" value="{{ search.return_date|default:'' }}">
+                    <input type="hidden" name="trip_type" value="{{ search.trip_type }}">
+                    <input type="hidden" name="travel_class" value="{{ search.travel_class }}">
+                    <input type="hidden" name="adults" value="{{ search.adults }}">
+                    <input type="hidden" name="children" value="{{ search.children }}">
+                    <input type="hidden" name="infants" value="{{ search.infants }}">
+                    <input type="hidden" name="fare_type" value="{{ search.fare_type }}">
+                    <input type="hidden" name="sort_by" id="sortFilterInput" value="{{ selected_sort }}">
+
+                    <!-- Stops Filter -->
+                    <div class="filter-group">
+                        <h4>Stops</h4>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="non_stop" value="true" {% if search.non_stop %}checked{% endif %} onchange="document.getElementById('filterForm').submit()">
+                            <span>Non-Stop Only</span>
+                        </label>
+                    </div>
+
+                    <!-- Airlines Filter -->
+                    <div class="filter-group">
+                        <h4>Airlines</h4>
+                        {% for airline in search.available_airlines %}
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="airline" value="{{ airline }}" {% if airline in selected_airlines %}checked{% endif %} onchange="document.getElementById('filterForm').submit()">
+                            <span>{{ airline }}</span>
+                        </label>
+                        {% empty %}
+                        <p class="filter-empty-text">No airline filters</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <h4>Max Price</h4>
+                        <div class="price-slider-wrapper">
+                            <input type="range" id="priceRange" name="max_price" min="{{ search.min_price|default:2000 }}" max="{{ search.max_price|default:60000 }}" step="500" value="{{ request.GET.max_price|default:search.max_price }}" oninput="document.getElementById('priceDisplay').textContent = '₹' + this.value" onchange="document.getElementById('filterForm').submit()">
+                            <div class="price-labels">
+                                <span>₹{{ search.min_price }}</span>
+                                <span id="priceDisplay" class="active-price">₹{{ request.GET.max_price|default:search.max_price }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-apply-filters">Apply Filters</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             Flight Results Listing
+        =========================================== -->
+        <main class="results-main">
+            <!-- Sort Bar -->
+            <div class="sort-bar">
+                <span class="sort-title">Sort By:</span>
+                <a href="?origin_code={{ search.origin_code }}&destination_code={{ search.destination_code }}&departure_date={{ search.departure_date|flight_date }}&adults={{ search.adults }}&sort_by=cheapest{% if search.non_stop %}&non_stop=true{% endif %}" class="sort-tab {% if selected_sort == 'cheapest' %}active{% endif %}">
+                    <i class="fas fa-tag"></i> Cheapest First
+                </a>
+                <a href="?origin_code={{ search.origin_code }}&destination_code={{ search.destination_code }}&departure_date={{ search.departure_date|flight_date }}&adults={{ search.adults }}&sort_by=fastest{% if search.non_stop %}&non_stop=true{% endif %}" class="sort-tab {% if selected_sort == 'fastest' %}active{% endif %}">
+                    <i class="fas fa-bolt"></i> Fastest First
+                </a>
+                <a href="?origin_code={{ search.origin_code }}&destination_code={{ search.destination_code }}&departure_date={{ search.departure_date|flight_date }}&adults={{ search.adults }}&sort_by=earliest{% if search.non_stop %}&non_stop=true{% endif %}" class="sort-tab {% if selected_sort == 'earliest' %}active{% endif %}">
+                    <i class="far fa-clock"></i> Earliest Departure
+                </a>
+            </div>
+
+            <!-- Flights List -->
+            <div class="flights-list">
+                {% for flight in search.flights %}
+                <div class="flight-card">
+                    <div class="flight-card-main">
+                        <!-- Airline Info -->
+                        <div class="airline-info">
+                            <div class="airline-icon">
+                                <i class="fas fa-plane-departure"></i>
+                            </div>
+                            <div class="airline-meta">
+                                <h4>{{ flight.airline }}</h4>
+                                <span class="flight-number">{{ flight.flight_number }}</span>
+                                <span class="aircraft-type">{{ flight.travel_class|title }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Row -->
+                        <div class="flight-schedule">
+                            <!-- Departure -->
+                            <div class="time-box">
+                                <span class="flight-time">{{ flight.departure_time|flight_time }}</span>
+                                <span class="flight-city-code">{{ flight.origin }}</span>
+                                <span class="flight-city-name">{{ flight.origin_city }}</span>
+                            </div>
+
+                            <!-- Duration & Stops -->
+                            <div class="duration-box">
+                                <span class="duration-text">{{ flight.duration }}</span>
+                                <div class="duration-line {% if flight.stops > 0 %}has-stop{% endif %}">
+                                    <span class="stop-dot"></span>
+                                    {% if flight.stops > 0 %}
+                                    <span class="stop-dot mid-dot" title="{{ flight.stop_cities|join:', ' }}"></span>
+                                    {% endif %}
+                                    <span class="stop-dot"></span>
+                                </div>
+                                <span class="stops-text">
+                                    {% if flight.stops == 0 %}
+                                        Non-Stop
+                                    {% else %}
+                                        {{ flight.stops }} Stop ({{ flight.stop_cities|join:', ' }})
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Arrival -->
+                            <div class="time-box">
+                                <span class="flight-time">{{ flight.arrival_time|flight_time }}</span>
+                                <span class="flight-city-code">{{ flight.destination }}</span>
+                                <span class="flight-city-name">{{ flight.destination_city }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Price & Action -->
+                        <div class="flight-pricing">
+                            <div class="price-box">
+                                <span class="currency-symbol">₹</span>
+                                <span class="price-value">{{ flight.final_price }}</span>
+                            </div>
+                            <span class="tax-info">Includes taxes & fees</span>
+                            <a href="{% url 'traveller_details' %}?flight_id={{ flight.id }}&origin={{ search.origin_code }}&destination={{ search.destination_code }}&departure_date={{ search.departure_date|flight_date }}&adults={{ search.adults }}&children={{ search.children }}&infants={{ search.infants }}&travel_class={{ search.travel_class }}&fare_type={{ search.fare_type }}" class="btn-book-flight">
+                                Book Now <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card Perks Footer -->
+                    <div class="flight-card-footer">
+                        <div class="flight-perks">
+                            <span class="perk-tag {% if flight.refundable %}refundable{% else %}non-refundable{% endif %}">
+                                <i class="fas fa-{% if flight.refundable %}check-circle{% else %}times-circle{% endif %}"></i>
+                                {% if flight.refundable %}Refundable{% else %}Non-Refundable{% endif %}
+                            </span>
+                            <span class="perk-tag">
+                                <i class="fas fa-suitcase"></i> Cabin: {{ flight.baggage_cabin }}
+                            </span>
+                            <span class="perk-tag">
+                                <i class="fas fa-luggage-cart"></i> Check-in: {{ flight.baggage_checkin }}
+                            </span>
+                            <span class="seats-left">
+                                <i class="fas fa-fire"></i> {{ flight.seats_available }} seats left at this price
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-flights-card">
+                    <div class="empty-icon"><i class="fas fa-plane-slash"></i></div>
+                    <h3>No Flights Found</h3>
+                    <p>We couldn't find any flights matching your active filters. Try adjusting your price range, stop criteria, or dates.</p>
+                    <a href="{% url 'flight_results' %}?origin_code={{ search.origin_code }}&destination_code={{ search.destination_code }}&departure_date={{ search.departure_date|flight_date }}&adults={{ search.adults }}" class="btn-clear-filters">
+                        Clear Filters
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

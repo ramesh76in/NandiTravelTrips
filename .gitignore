@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+config/venv/
+
+# Environment configuration (Sensitive API keys & secrets)
+.env
+.env.local
+
+# Databases
+*.sqlite3
+db.sqlite3
+
+# Logs & Cache
+*.log
+logs/*.log
+!logs/.gitkeep
+.django_cache/
+NandiTravelTrips/
+
+# Project zip archives & temporary backups
+*.zip
+NandiTravelTrips.zip
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Static collected files (if any)
+staticfiles/

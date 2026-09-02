@@ -1,0 +1,259 @@
+/* ==========================================
+   Nandi Travel Trips - Responsive Media Queries
+========================================== */
+
+/* ==========================================
+   1200px and below (Laptops & Small Desktops)
+========================================== */
+@media (max-width: 1200px) {
+    .search-row {
+        grid-template-columns: 1fr 50px 1fr 1fr;
+    }
+
+    .booking-box.return-box {
+        grid-column: span 2;
+    }
+
+    .destinations-grid,
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-top {
+        grid-template-columns: 1.5fr 1fr 1fr;
+    }
+
+    .flight-card-main {
+        grid-template-columns: 180px 1fr 180px;
+        gap: 16px;
+    }
+}
+
+/* ==========================================
+   992px and below (Tablets Landscape)
+========================================== */
+@media (max-width: 992px) {
+    .navbar {
+        height: auto;
+        padding: 14px 0;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .nav-menu {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+    }
+
+    .hero {
+        margin-top: 130px;
+        height: 420px;
+    }
+
+    .hero-content h1 {
+        font-size: 38px;
+    }
+
+    .hero-content p {
+        font-size: 17px;
+    }
+
+    .results-page-wrapper,
+    .booking-flow-wrapper {
+        margin-top: 140px;
+    }
+
+    .search-summary-bar {
+        top: 130px;
+    }
+
+    .results-layout,
+    .booking-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar,
+    .sidebar-summary-card {
+        position: static;
+    }
+
+    .booking-bottom-row {
+        grid-template-columns: 1fr;
+    }
+
+    .search-options-row {
+        grid-template-columns: 1fr;
+    }
+
+    .flight-card-main {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .airline-info {
+        justify-content: center;
+    }
+
+    .flight-pricing {
+        border-left: none;
+        border-top: 1px dashed var(--border);
+        padding-left: 0;
+        padding-top: 16px;
+        align-items: center;
+    }
+
+    .footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+}
+
+/* ==========================================
+   768px and below (Tablets Portrait)
+========================================== */
+@media (max-width: 768px) {
+    .hero {
+        height: 380px;
+    }
+
+    .hero-content h1 {
+        font-size: 30px;
+    }
+
+    .search-row {
+        grid-template-columns: 1fr;
+    }
+
+    .swap-container {
+        margin: -8px 0;
+    }
+
+    .swap-button {
+        transform: rotate(90deg);
+    }
+
+    .swap-button:hover {
+        transform: rotate(270deg);
+    }
+
+    .booking-tabs {
+        flex-wrap: wrap;
+    }
+
+    .booking-tab {
+        flex: 1 1 50%;
+        padding: 14px;
+        font-size: 14px;
+    }
+
+    .summary-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .form-grid-4,
+    .form-grid-3,
+    .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .itinerary-route-grid,
+    .ticket-route-grid,
+    .ticket-passenger-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .ticket-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .ticket-title-col {
+        text-align: left;
+    }
+
+    .pnr-display-box {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .success-actions {
+        flex-direction: column;
+    }
+
+    .steps-indicator {
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    .step-line {
+        width: 20px;
+    }
+
+    .destinations-grid,
+    .features-grid,
+    .footer-top {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================
+   576px and below (Mobile Phones)
+========================================== */
+@media (max-width: 576px) {
+    .container {
+        width: 94%;
+    }
+
+    .hero-content h1 {
+        font-size: 26px;
+    }
+
+    .hero-content p {
+        font-size: 14px;
+    }
+
+    .booking-card form {
+        padding: 20px 16px;
+    }
+
+    .booking-title {
+        font-size: 20px;
+    }
+
+    .search-flight-button {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .flight-schedule {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .calendar-content,
+    .airport-modal-content,
+    .traveller-popup {
+        width: 100%;
+        max-width: 95%;
+        margin: 20px auto;
+    }
+
+    .calendar-day {
+        height: 42px;
+        font-size: 13px;
+    }
+
+    .toast-item {
+        min-width: 260px;
+    }
+}

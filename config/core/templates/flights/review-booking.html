@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load flight_display %}
+{% load static %}
+
+{% block title %}Review Booking | Nandi Travel Trips{% endblock %}
+
+{% block content %}
+<div class="booking-flow-wrapper">
+    <!-- Booking Flow Steps Bar -->
+    <div class="booking-steps-bar">
+        <div class="container">
+            <div class="steps-indicator">
+                <div class="step-item done"><span class="step-num">1</span> Flight Search</div>
+                <div class="step-line done"></div>
+                <div class="step-item done"><span class="step-num">2</span> Passenger Details</div>
+                <div class="step-line active"></div>
+                <div class="step-item active"><span class="step-num">3</span> Review Booking</div>
+                <div class="step-line"></div>
+                <div class="step-item"><span class="step-num">4</span> Confirmation</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container booking-layout">
+        <!-- Main Review Details -->
+        <div class="booking-main">
+            <!-- Itinerary Card -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <h3><i class="fas fa-plane-departure"></i> Flight Itinerary</h3>
+                    <span class="badge-status-confirmed">Available</span>
+                </div>
+                <div class="review-flight-details">
+                    <div class="airline-brand">
+                        <i class="fas fa-plane"></i>
+                        <div>
+                            <h4>{{ flight.airline }}</h4>
+                            <span>{{ flight.flight_number }} • {{ flight.travel_class|title }} Class</span>
+                        </div>
+                    </div>
+
+                    <div class="itinerary-route-grid">
+                        <div class="route-node">
+                            <span class="node-time">{{ flight.departure_time|flight_time }}</span>
+                            <strong class="node-city">{{ flight.origin_city }} ({{ flight.origin }})</strong>
+                            <span class="node-date">{{ flight.departure_date|flight_date|default:'2026-08-25' }}</span>
+                        </div>
+                        <div class="route-mid">
+                            <span class="mid-duration">{{ flight.duration }}</span>
+                            <div class="mid-line"></div>
+                            <span class="mid-stops">{% if flight.stops == 0 %}Direct / Non-Stop{% else %}{{ flight.stops }} Stop{% endif %}</span>
+                        </div>
+                        <div class="route-node">
+                            <span class="node-time">{{ flight.arrival_time|flight_time }}</span>
+                            <strong class="node-city">{{ flight.destination_city }} ({{ flight.destination }})</strong>
+                            <span class="node-date">{{ flight.departure_date|flight_date|default:'2026-08-25' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="baggage-pill-row">
+                        <span><i class="fas fa-suitcase"></i> Cabin Baggage: {{ flight.baggage_cabin }}</span>
+                        <span><i class="fas fa-luggage-cart"></i> Check-in Baggage: {{ flight.baggage_checkin }}</span>
+                        <span><i class="fas fa-utensils"></i> Complimentary Meals</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passengers Card -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <h3><i class="fas fa-users"></i> Passenger List</h3>
+                    <span>{{ passengers|length }} Traveller{% if passengers|length > 1 %}s{% endif %}</span>
+                </div>
+                <div class="passengers-table-wrapper">
+                    <table class="passengers-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Passenger Name</th>
+                                <th>Type</th>
+                                <th>Gender</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in passengers %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><strong>{{ p.full_name }}</strong></td>
+                                <td><span class="badge-tag">{{ p.type }}</span></td>
+                                <td>{{ p.gender }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Contact Card -->
+            <div class="review-card">
+                <div class="review-card-header">
+                    <h3><i class="fas fa-envelope-open-text"></i> Contact Information</h3>
+                </div>
+                <div class="contact-info-grid">
+                    <div>
+                        <small>Email Address</small>
+                        <p><strong>{{ email }}</strong></p>
+                    </div>
+                    <div>
+                        <small>Phone Number</small>
+                        <p><strong>{{ phone }}</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmation Action Form -->
+            <form action="{% url 'booking_success' %}" method="POST" class="confirmation-form">
+                {% csrf_token %}
+                <input type="hidden" name="flight_id" value="{{ flight.id }}">
+                <input type="hidden" name="origin" value="{{ flight.origin }}">
+                <input type="hidden" name="destination" value="{{ flight.destination }}">
+                <input type="hidden" name="departure_date" value="{{ departure_date|default:'2026-08-25' }}">
+                <input type="hidden" name="email" value="{{ email }}">
+                <input type="hidden" name="phone" value="{{ phone }}">
+                <input type="hidden" name="grand_total" value="{{ grand_total }}">
+                <input type="hidden" name="primary_passenger" value="{{ passengers.0.full_name|default:'Mr. Rahul Sharma' }}">
+
+                <div class="terms-acceptance">
+                    <label class="checkbox-option">
+                        <input type="checkbox" required checked>
+                        <span>I accept the Airline Rules, Cancellation Policy, and Nandi Travel Trips Terms of Service.</span>
+                    </label>
+                </div>
+
+                <div class="form-action-card">
+                    <button type="submit" class="btn-confirm-payment">
+                        <i class="fas fa-lock"></i> Confirm & Generate Ticket (₹{{ grand_total }})
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <aside class="booking-sidebar">
+            <div class="sidebar-summary-card">
+                <div class="summary-card-header">
+                    <h4>Fare Breakdown</h4>
+                </div>
+                <div class="sidebar-flight-body">
+                    <div class="fare-summary-box">
+                        <div class="fare-row">
+                            <span>Base Fare</span>
+                            <span>₹{{ base_fare }}</span>
+                        </div>
+                        <div class="fare-row">
+                            <span>Taxes & Carrier Surcharges</span>
+                            <span>₹{{ taxes }}</span>
+                        </div>
+                        <div class="fare-row discount-row">
+                            <span>Instant Promotion Discount</span>
+                            <span class="text-green">-₹0.00</span>
+                        </div>
+                        <div class="fare-divider"></div>
+                        <div class="fare-row total-row">
+                            <span>Total Amount</span>
+                            <span class="fare-grand-total">₹{{ grand_total }}</span>
+                        </div>
+                    </div>
+
+                    <div class="security-badge-box">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>256-Bit SSL Encrypted & 100% Guaranteed Booking</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+/* ==========================================
+   Nandi Travel Trips - Traveller Popup Styles
+========================================== */
+
+.traveller-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 440px;
+    max-width: 92%;
+    background: #ffffff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    display: none;
+    overflow: hidden;
+    animation: modalScale 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    background: #ffffff;
+}
+
+.popup-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.popup-header button {
+    border: none;
+    background: none;
+    font-size: 24px;
+    color: var(--light-text);
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition);
+}
+
+.popup-header button:hover {
+    color: var(--primary);
+}
+
+.popup-body {
+    padding: 20px 24px;
+}
+
+.popup-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.popup-row:last-of-type {
+    border-bottom: none;
+}
+
+.popup-row h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.popup-row p {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--light-text);
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.counter button {
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.counter button:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.counter span {
+    min-width: 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.travel-class {
+    margin-top: 18px;
+}
+
+.travel-class label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.travel-class select {
+    width: 100%;
+    height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 14px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: var(--transition);
+    background: #ffffff;
+}
+
+.travel-class select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139, 30, 63, 0.1);
+}
+
+.popup-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    background: #f8fafc;
+    text-align: right;
+}
+
+.popup-footer button {
+    padding: 10px 28px;
+    border: none;
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.popup-footer button:hover {
+    background: var(--primary-dark);
+}

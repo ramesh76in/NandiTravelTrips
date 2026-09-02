@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load flight_display %}
+{% load static %}
+
+{% block title %}Booking Confirmed - PNR: {{ pnr }} | Nandi Travel Trips{% endblock %}
+
+{% block content %}
+<div class="booking-flow-wrapper">
+    <!-- Booking Flow Steps Bar -->
+    <div class="booking-steps-bar">
+        <div class="container">
+            <div class="steps-indicator">
+                <div class="step-item done"><span class="step-num">1</span> Flight Search</div>
+                <div class="step-line done"></div>
+                <div class="step-item done"><span class="step-num">2</span> Passenger Details</div>
+                <div class="step-line done"></div>
+                <div class="step-item done"><span class="step-num">3</span> Review Booking</div>
+                <div class="step-line done"></div>
+                <div class="step-item done active"><span class="step-num"><i class="fas fa-check"></i></span> Confirmation</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container success-container">
+        <!-- Success Banner -->
+        <div class="success-banner-card">
+            <div class="success-icon-wrap">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Booking Confirmed!</h2>
+            <p>Congratulations! Your flight ticket has been successfully issued. A copy of your e-ticket has been sent to <strong>{{ email }}</strong>.</p>
+
+            <div class="pnr-display-box">
+                <div class="pnr-item">
+                    <small>Airline PNR</small>
+                    <strong class="pnr-code">{{ pnr }}</strong>
+                </div>
+                <div class="pnr-item">
+                    <small>Booking Reference</small>
+                    <strong>{{ booking_ref }}</strong>
+                </div>
+                <div class="pnr-item">
+                    <small>Status</small>
+                    <span class="badge-status-confirmed"><i class="fas fa-check"></i> Confirmed</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- E-Ticket Card -->
+        <div class="ticket-card" id="printableTicket">
+            <div class="ticket-header">
+                <div class="ticket-logo">
+                    <img src="{% static 'images/logo.png' %}" alt="Nandi Travel Trips">
+                </div>
+                <div class="ticket-title-col">
+                    <h3>Electronic Ticket Receipt</h3>
+                    <span>Issued on {{ booking_time }}</span>
+                </div>
+            </div>
+
+            <div class="ticket-body">
+                <!-- Flight Segment details -->
+                <div class="ticket-flight-row">
+                    <div class="airline-brand">
+                        <i class="fas fa-plane"></i>
+                        <div>
+                            <h4>{{ flight.airline }}</h4>
+                            <span>{{ flight.flight_number }} • {{ flight.travel_class|title }} Class</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-route-grid">
+                        <div class="route-node">
+                            <span class="node-time">{{ flight.departure_time|flight_time }}</span>
+                            <strong class="node-city">{{ flight.origin_city }} ({{ flight.origin }})</strong>
+                        </div>
+                        <div class="route-mid">
+                            <span class="mid-duration">{{ flight.duration }}</span>
+                            <div class="mid-line"></div>
+                            <span class="mid-stops">{% if flight.stops == 0 %}Non-Stop{% else %}{{ flight.stops }} Stop{% endif %}</span>
+                        </div>
+                        <div class="route-node">
+                            <span class="node-time">{{ flight.arrival_time|flight_time }}</span>
+                            <strong class="node-city">{{ flight.destination_city }} ({{ flight.destination }})</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-passenger-row">
+                    <div class="ticket-col">
+                        <small>Primary Passenger</small>
+                        <p><strong>{{ primary_passenger }}</strong></p>
+                    </div>
+                    <div class="ticket-col">
+                        <small>Baggage Allowance</small>
+                        <p>Cabin: {{ flight.baggage_cabin }} | Check-in: {{ flight.baggage_checkin }}</p>
+                    </div>
+                    <div class="ticket-col">
+                        <small>Total Amount Paid</small>
+                        <p><strong class="fare-grand-total">₹{{ grand_total }}</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticket-footer">
+                <p><i class="fas fa-info-circle"></i> Please carry a valid government-issued photo ID along with this ticket for airport check-in.</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="success-actions">
+            <button type="button" class="btn btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i> Print E-Ticket
+            </button>
+            <a href="{% url 'home' %}" class="btn btn-home">
+                <i class="fas fa-home"></i> Back to Homepage
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Searching Flights | Nandi Travel Trips{% endblock %}
+{% block content %}
+<div style="min-height:65vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;">
+  <div style="max-width:620px;width:100%;text-align:center;padding:42px 28px;border-radius:18px;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.08);">
+    <div style="font-size:44px;margin-bottom:18px;">✈️</div>
+    <h2 style="margin:0 0 10px;">Finding live flights</h2>
+    <p style="margin:0 0 26px;color:#666;">{{ origin_code }} → {{ destination_code }} · {{ departure_date }}</p>
+    <div style="height:8px;background:#eee;border-radius:10px;overflow:hidden;margin-bottom:20px;"><div id="progress" style="height:100%;width:10%;border-radius:10px;background:currentColor;transition:width .7s ease;"></div></div>
+    <div id="status" style="font-weight:600;">Connecting to live airfare inventory…</div>
+    <p style="font-size:13px;color:#888;margin-top:14px;">Live fares are checked with our airline supplier. Please don't refresh.</p>
+  </div>
+</div>
+<script>
+(function(){
+  const jobId = "{{ job_id|escapejs }}", statusUrl = "{{ status_url|escapejs }}";
+  const status = document.getElementById('status'), progress = document.getElementById('progress');
+  let elapsed = 0;
+  const messages = [[0,'Connecting to live airfare inventory…'],[3,'Checking schedules and seat availability…'],[7,'Comparing live fares…'],[11,'Preparing your best available flights…']];
+  function paint(){ for(let i=messages.length-1;i>=0;i--){if(elapsed>=messages[i][0]){status.textContent=messages[i][1];break;}} progress.style.width=Math.min(92,10+elapsed*6)+'%'; }
+  async function poll(){
+    try { const r=await fetch(statusUrl+'?job_id='+encodeURIComponent(jobId),{cache:'no-store'}), d=await r.json();
+      if(d.status==='ready'){progress.style.width='100%';status.textContent='Flights found — loading results…';window.location.href=d.results_url;return;}
+      if(d.status==='error'){status.textContent='We could not complete the live search. Please try again.';progress.style.width='0%';return;}
+    } catch(e) {}
+    elapsed++; paint(); setTimeout(poll,1000);
+  }
+  paint(); poll();
+})();
+</script>
+{% endblock %}
